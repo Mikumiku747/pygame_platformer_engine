@@ -1,0 +1,1 @@
+This is just a simple game engine that I'm making using pygame. Mainly just a test of how good the physics stuff we're doing at school actually works in practice. But also good programming practice. 
