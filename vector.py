@@ -37,8 +37,8 @@ class Vector2:
 
     def __init__(self, x=0.0, y=0.0):
         "A two dimensional vector with components X and Y."
-        self.x = x
-        self.y = y
+        self.x = float(x)
+        self.y = float(y)
 
     def contruct_two_part(self, magnitude=0.0, direction=0.0):
         """Redefine the vector using a magnitude and rotation.
@@ -50,9 +50,9 @@ class Vector2:
         assert isinstance(direction, (int, float, long)), "You need to supply a scalar number in degrees as a direction. "
 
         #Obtain the X component
-        self.x = magnitude*math.degrees(math.cos(direction))
+        self.x = float(magnitude)*math.degrees(math.cos(direction))
         #Obtain the Y component
-        self.y = magnitude*math.degrees(math.sin(direction))
+        self.y = float(magnitude)*math.degrees(math.sin(direction))
 
     def magnitude(self):
         "Gives the magnitude of the vector."
@@ -77,6 +77,11 @@ class Vector2:
         "Multiplies this vector by a scalar value."
         assert isinstance(scalar, (int, long, float)), "You can only multiply vectors by scalars with this method."
         return Vector2(self.x*scalar, self.y*scalar)
+
+    def divide(self, scalar):
+        "Divides the vector by a scalar value."
+        assert isinstance(scalar, (int, long, float)), "You can only divide vectors by scalars with this method."
+        return Vector2(self.x/scalar, self.y/scalar)
 
     def scalar_product(self, other):
         "Scalar product of this vector and another vector."
