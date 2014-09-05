@@ -50,9 +50,9 @@ class Vector2:
         assert isinstance(direction, (int, float, long)), "You need to supply a scalar number in degrees as a direction. "
 
         #Obtain the X component
-        self.x = magnitude*math.cos(direction)
+        self.x = magnitude*math.degrees(math.cos(direction))
         #Obtain the Y component
-        self.y = magnitude*math.sin(direction)
+        self.y = magnitude*math.degrees(math.sin(direction))
 
     def magnitude(self):
         "Gives the magnitude of the vector."
@@ -83,9 +83,14 @@ class Vector2:
         assert isinstance(other, Vector2), "You must use 2 2D vectors when finding the scalar product."
         return self.x*other.x + self.y*other.y + self.z*other.z
 
-    def vector_product(self, other):
-        "Gives the vector product of this and another vector. "
-        assert()
+##    def vector_product(self, other):
+##        "Gives the vector product of this and another vector. "
+##        assert()
+
+    def __str__(self):
+        return "2D Vector: x={x}, y={y}".format(x=self.x, y=self.y)
+    def __repr__(self):
+        return "Vector2({x},{y})".format(x=self.x, y=self.y)
 
 def main():
     v1 = Vector2(5.0, 5.0)
