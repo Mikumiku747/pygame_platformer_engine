@@ -12,6 +12,7 @@
 
 #Required modules
 import vector
+import copy
 
 #Module Notes
 #------------
@@ -72,15 +73,27 @@ class Rectangular_dynamic:
         self.acceleration=self.acceleration.sum(force.divide(self.mass))
         return force.divide(self.mass)
 
+    def dampen(self, multiplier):
+        "Dampen this object by apply the multiplier to it's velocity. Returns the change in velocity."
+        assert isinstance(multiplier, (int, long, float)), "The dampen multiplier must be a number."
+        original = self.velocity
+        self.velocity = self.velocity.multiply(multiplier)
+        return original.diff(self.velocity)
+
     def update(self):
         "Update the physical state of this object by one frame."
-        assert isinstance(gravity, vector.Vector2), "Gravity must be a 2D vector or similar."
-        assert isinstance(dampening, (int, long, float))
-        self.acceleration = self.acceleration.sum(gravity) #Add gravity to the acceleration on this object
         self.velocity = self.velocity.sum(self.acceleration) #Apply the acceleration to the object's velocity
         self.displacement = self.displacement.sum(self.velocity) #Apply the object's velocity to it's displacement
         self.velocity = self.velocity.multiply(self.dampening) #Dampen the velocity of the object
         self.acceleration = self.default_accel #Reset the acceleration of the object
+
+    def next(self, time=1):
+        "Returns an exact copy of this object time updates in the future."
+        future = copy.deepcopy(self)
+        for iteration in range(time):
+            future.update()
+        return future
+
 
     def __str__(self):
         return "Rectangular dynamic object: Mass={mass}, Displacement={disp}, Velocity={vel}".format(mass=self.mass, disp=repr(self.displacement), vel=repr(self.velocity))
