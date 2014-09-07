@@ -40,32 +40,18 @@ import copy
 #           - X least, Y most  (Bottom Left)
 #           - X most,  Y most  (Bottom Right)
 
-class Rectangular_dynamic:
-    """A rectangular physical object, which has classical interactions with the environment."""
+class Dynamic_body:
+    "A generic physical body with classical reactions to it's environment."
     def __init__(self, displacement=vector.Vector2(0.0, 0.0),
-                        proportion=vector.Vector2(1.0, 1.0),
                         velocity=vector.Vector2(0.0, 0.0),
                         default_accel=vector.Vector2(0.0, 0.0),
                         mass=1.0, dampening=1.0):
-        "A rectangular physical object."
         self.displacement = displacement #Centre of body
-        self.proportion = proportion #Size of body
         self.velocity = velocity #In PX.FR^-1
         self.acceleration = vector.Vector2() #In PX.FR^-2
         self.mass = float(mass) #In MU
         self.default_accel = default_accel #Accel. reset value
         self.dampening = float(dampening) #Amount of arbitrary drag.
-
-    def corners(self):
-        "Get the corners of this rectangle as displacement vectors."
-        return (vector.Vector2(self.displacement.x-(self.proportion.x/2),
-                               self.displacement.y-(self.proportion.y/2)),
-                vector.Vector2(self.displacement.x+(self.proportion.x/2),
-                               self.displacement.y-(self.proportion.y/2)),
-                vector.Vector2(self.displacement.x-(self.proportion.x/2),
-                               self.displacement.y+(self.proportion.y/2)),
-                vector.Vector2(self.displacement.x+(self.proportion.x/2),
-                               self.displacement.y+(self.proportion.y/2)))
 
     def apply_force(self, force=vector.Vector2()):
         """Apply a force (in PX.FR^-2) to this object.
@@ -94,6 +80,16 @@ class Rectangular_dynamic:
             future.update()
         return future
 
+class Rectangular_dynamic(dynamic_body):
+    """A rectangular physical object, which has classical interactions with the environment."""
+    def __init__(self, displacement=vector.Vector2(0.0, 0.0),
+                        proportion=vector.Vector2(1.0,1.0),
+                        velocity=vector.Vector2(0.0, 0.0),
+                        default_accel=vector.Vector2(0.0, 0.0),
+                        mass=1.0, dampening=1.0):
+        dynamic_body.__init__(self, displacement=displacement, velocity=velocity, default_accel=default_accel, mass=mass, dampening=dampening)
+        #Initialise the physical object
+        self.proportion = proportion #Give the rectangular a proportion
 
     def __str__(self):
         return "Rectangular dynamic object: Mass={mass}, Displacement={disp}, Velocity={vel}".format(mass=self.mass, disp=repr(self.displacement), vel=repr(self.velocity))
