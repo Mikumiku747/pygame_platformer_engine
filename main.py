@@ -28,6 +28,7 @@ def main():
     print("box1: {}\nbox2: {}".format(box1, box2))
     print("They are colliding!")
     print("box1: {}\nbox2: {}".format(box1.next(), box2.next()))
+    pass
 
 if __name__ == '__main__':
     main()
