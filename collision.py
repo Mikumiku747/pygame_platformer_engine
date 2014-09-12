@@ -9,12 +9,9 @@
 # Copyright:   (c) Daniel 2014
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
-
-from pygame.rect import Rect as Rect
+from pygame.rect import Rect
 import physics
-
-class CollisionException(Exception):
-    pass
+import vector
 
 def rectangle_rectangle(x1, y1, w1, h1, x2, y2, w2, h2):
     "Test for intersection of rectangles 1 and 2, centres x,y, dimensions w,h"
@@ -22,12 +19,30 @@ def rectangle_rectangle(x1, y1, w1, h1, x2, y2, w2, h2):
     b = Rect((x2-w2/2, y2-h2/2, w2, h2))
     return bool(a.colliderect(b))
 
-def collide(body1, body2):
-    if (isinstance(body1, physics.Rectangular_dynamic) and isinstance(body2, physics.Rectangular_dynamic)):
-        #Test for collision between 2 rectangles
-        return rectangle_rectangle(body1.displacement.x, body1.displacement.y, body1.proportion.x, body1.proportion.y, body2.displacement.x, body2.displacement.y, body2.proportion.x, body2.proportion.y)
-    else:
-        raise CollisionException("There is no suitable collision algorithm for these two types of bodies:", body1, body2)
+class rectangle_collider():
+    "Rectangle shaped collider object"
+    def __init__(self, proportion=vector.Vector2(1.0, 1.0), offset=vector.Vector2()):
+        self.proportion = proportion
+        self.offset = offset
+
+def check_intersect(body1, body2):
+    "Checks if any part of two bodies are intersecting."
+    for collider1 in body1.colliders:
+        for collider2 in body2.colliders:
+            if (isinstance(collider1, rectangle_collider) and
+                isinstance(collider2, rectangle_collider)):
+                    if rectangle_rectangle(body1.displacement.x+collider1.offset.x,
+                                           body1.displacement.y+collider1.offset.x,
+                                           collider1.proportion.x,
+                                           collider1.proportion.y,
+                                           body2.displacement.x+collider2.offset.x,
+                                           body2.displacement.y+collider2.offset.x,
+                                           collider2.proportion.x,
+                                           collider2.proportion.y): return True
+                    else:
+                        raise Exception("Could not test collision, an alogrithm does not exist yet for testing between these two colliders:", collider1, collider2)
+                    return False
+
 
 def main():
     pass
