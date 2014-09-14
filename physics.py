@@ -13,6 +13,7 @@
 #Required modules
 import vector
 import copy
+import collision
 
 #Module Notes
 #------------
@@ -85,6 +86,19 @@ class Dynamic_body:
     def repr(self):
         return "Dynamic body(displacement={}, velocity={}, acceleration = {}, default_accel={}, mass={}, dampening={}, colliders = {})".format(
     self.displacement, self.velocity, self.acceleration, self.default_accel, self.mass, self.dampening, self.colliders)
+
+    def collide(self, other):
+        if collision.check_intersect(self, other):
+            u1x, u1y, u2x, u2y = self.velocity.x, self.velocity.y, other.velocity.x, other.velocity.y
+            m1, m2 = self.mass, other.mass
+            #Find new velocity of each object
+            v1x = (u1x*(m1-m2)+2*m2*u2x)/(m1+m2)
+            v1y = (u1y*(m1-m2)+2*m2*u2x)/(m1+m2)
+            v2x = (u2x*(m2-m1)+2*m1*u1x)/(m1+m2)
+            v2y = (u2y*(m2-m1)+2*m1*u1y)/(m1+m2)
+            #Apply these new velocities to the objects
+            self.velocity.x, self.velocity.y = v1x, v1y
+            other.velocity.x, other.velocity.y = v2x, v2y
 
 def main():
     pass

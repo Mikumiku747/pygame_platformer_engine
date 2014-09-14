@@ -24,13 +24,15 @@ class rectangle_collider():
     def __init__(self, proportion=vector.Vector2(1.0, 1.0), offset=vector.Vector2()):
         self.proportion = proportion
         self.offset = offset
+        self.shape ="rectangle" #Make sure your class has this attribute so that
+                                #the collider can determine what kind of shape
+                                #this thing is.
 
 def check_intersect(body1, body2):
     "Checks if any part of two bodies are intersecting."
     for collider1 in body1.colliders:
         for collider2 in body2.colliders:
-            if (isinstance(collider1, rectangle_collider) and
-                isinstance(collider2, rectangle_collider)):
+            if (collider1.shape=="rectangle" and collider1.shape=="rectangle"):
                     if rectangle_rectangle(body1.displacement.x+collider1.offset.x,
                                            body1.displacement.y+collider1.offset.x,
                                            collider1.proportion.x,
@@ -39,9 +41,9 @@ def check_intersect(body1, body2):
                                            body2.displacement.y+collider2.offset.x,
                                            collider2.proportion.x,
                                            collider2.proportion.y): return True
-                    else:
-                        raise Exception("Could not test collision, an alogrithm does not exist yet for testing between these two colliders:", collider1, collider2)
-                    return False
+            else:
+                raise Exception("Could not test collision, an alogrithm does not exist yet for testing between these two colliders:", collider1, collider2)
+            return False
 
 
 def main():
