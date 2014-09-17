@@ -13,6 +13,7 @@
 #Required modules
 import vector
 import copy
+import collision
 
 #Module Notes
 #------------
@@ -44,14 +45,16 @@ class Dynamic_body:
     "A generic physical body with classical reactions to it's environment."
     def __init__(self, displacement=vector.Vector2(0.0, 0.0),
                         velocity=vector.Vector2(0.0, 0.0),
+                        acceleration=vector.Vector2(0.0, 0.0),
                         default_accel=vector.Vector2(0.0, 0.0),
-                        mass=1.0, dampening=1.0):
+                        mass=1.0, dampening=1.0, colliders = []):
         self.displacement = displacement #Centre of body
         self.velocity = velocity #In PX.FR^-1
         self.acceleration = vector.Vector2() #In PX.FR^-2
         self.mass = float(mass) #In MU
         self.default_accel = default_accel #Accel. reset value
         self.dampening = float(dampening) #Amount of arbitrary drag.
+        self.colliders = colliders
 
     def apply_force(self, force=vector.Vector2()):
         """Apply a force (in PX.FR^-2) to this object.
@@ -80,37 +83,22 @@ class Dynamic_body:
             future.update()
         return future
 
-class Rectangular_dynamic(Dynamic_body):
-    """A rectangular physical object, which has classical interactions with the environment."""
-    def __init__(self, displacement=vector.Vector2(0.0, 0.0),
-                        proportion=vector.Vector2(1.0,1.0),
-                        velocity=vector.Vector2(0.0, 0.0),
-                        default_accel=vector.Vector2(0.0, 0.0),
-                        mass=1.0, dampening=1.0):
-        Dynamic_body.__init__(self, displacement=displacement, velocity=velocity, default_accel=default_accel, mass=mass, dampening=dampening)
-        #Initialise the physical object
-        self.proportion = proportion #Give the rectangular a proportion
+    def repr(self):
+        return "Dynamic body(displacement={}, velocity={}, acceleration = {}, default_accel={}, mass={}, dampening={}, colliders = {})".format(
+    self.displacement, self.velocity, self.acceleration, self.default_accel, self.mass, self.dampening, self.colliders)
 
-    def __str__(self):
-        return "Rectangular dynamic object: Mass={mass}, Displacement={disp}, Velocity={vel}".format(mass=self.mass, disp=repr(self.displacement), vel=repr(self.velocity))
-    def __repr__(self):
-        return "Rectangular_dynamic(\ndisplacement={disp},\nproportion={size},\nvelocity={vel},\ndefault_accel={default_accel},\nacceleration={accel},\nmass={mass}".format(disp=repr(self.displacement), size=repr(self.proportion), vel=repr(self.velocity), default_accel=repr(self.default_accel), accel=repr(self.acceleration), mass=self.mass)
-
-class Circular_dynamic(Dynamic_body):
-    """A rectangular physical object, which has classical interactions with the environment."""
-    def __init__(self, displacement=vector.Vector2(0.0, 0.0),
-                        radius = 1.0,
-                        velocity=vector.Vector2(0.0, 0.0),
-                        default_accel=vector.Vector2(0.0, 0.0),
-                        mass=1.0, dampening=1.0):
-        Dynamic_body.__init__(self, displacement=displacement, velocity=velocity, default_accel=default_accel, mass=mass, dampening=dampening)
-        #Initialise the physical object
-        self.radius = float(radius) #Give the circle a radius
-
-    def __str__(self):
-        return "Circular Dynamic object: Mass={mass}, Displacement={disp}, Velocity={vel}".format(mass=self.mass, disp=repr(self.displacement), vel=repr(self.velocity))
-    def __repr__(self):
-        return "Circular_dynamic(\ndisplacement={disp},\nradius={radius},\nvelocity={vel},\ndefault_accel={default_accel},\nacceleration={accel},\nmass={mass}".format(disp=repr(self.displacement), radius=self.radius, vel=repr(self.velocity), default_accel=repr(self.default_accel), accel=repr(self.acceleration), mass=self.mass)
+    def collide(self, other):
+        if collision.check_intersect(self, other):
+            u1x, u1y, u2x, u2y = self.velocity.x, self.velocity.y, other.velocity.x, other.velocity.y
+            m1, m2 = self.mass, other.mass
+            #Find new velocity of each object
+            v1x = (u1x*(m1-m2)+2*m2*u2x)/(m1+m2)
+            v1y = (u1y*(m1-m2)+2*m2*u2x)/(m1+m2)
+            v2x = (u2x*(m2-m1)+2*m1*u1x)/(m1+m2)
+            v2y = (u2y*(m2-m1)+2*m1*u1y)/(m1+m2)
+            #Apply these new velocities to the objects
+            self.velocity.x, self.velocity.y = v1x, v1y
+            other.velocity.x, other.velocity.y = v2x, v2y
 
 def main():
     pass
