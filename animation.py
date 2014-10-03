@@ -18,8 +18,13 @@ pygame.init()
 from os import
 load = pygame.image.load
 
-def load_folder(folder_path):
+def load_spite_set(folder_path, prefix='', ext=".png"):
     "Loads a bunch of images from a folder, returns a list of surfaces."
+    ret = []
+    for file in os.listdir(folder_path):
+		if file.startswith(prefix) and file.endswith(ext):
+			ret.append(load("{}/{}".format(folder_path, file)))
+		
 
 
 def main():
